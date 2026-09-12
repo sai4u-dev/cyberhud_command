@@ -17,6 +17,18 @@ import AdminPanel from './pages/admin/AdminPanel'
 import BattleZone from './pages/BattleZone'
 import Unauthorized from './pages/Unauthorized'
 
+// New pages
+import Settings from './pages/Settings'
+import BattleLobby from './pages/battles/BattleLobby'
+import OneToOne from './pages/battles/OneToOne'
+import OneToMany from './pages/battles/OneToMany'
+import BattleRoom from './pages/battles/BattleRoom'
+import Market from './pages/market/Market'
+import Arsenal from './pages/arsenal/Arsenal'
+import Leaderboard from './pages/leaderboard/Leaderboard'
+import Profile from './pages/profile/Profile'
+import Tournament from './pages/tournament/Tournament'
+
 function App() {
   const dispatch = useDispatch();
 
@@ -37,11 +49,27 @@ function App() {
         <Route path='/register' element={<Register />} />
         <Route path='/unauthorized' element={<Unauthorized />} />
         <Route path='/battlezone' element={<BattleZone />} />
+        <Route path='/market' element={<Market />} />
+        <Route path='/arsenal' element={<Arsenal />} />
+        <Route path='/leaderboard' element={<Leaderboard />} />
+        <Route path='/tournament' element={<Tournament />} />
+        <Route path='/settings' element={<Settings />} />
+
+        {/* Battles - public lobby but actions require auth (handled inside) */}
+        <Route path='/battles' element={<BattleLobby />} />
+        <Route path='/battles/one-to-one' element={<OneToOne />} />
+        <Route path='/battles/one-to-many' element={<OneToMany />} />
+        <Route path='/battles/:id' element={<BattleRoom />} />
 
         {/* Protected - any authenticated */}
         <Route path='/dashboard' element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        } />
+        <Route path='/profile' element={
+          <ProtectedRoute>
+            <Profile />
           </ProtectedRoute>
         } />
 
@@ -59,7 +87,7 @@ function App() {
           </ProtectedRoute>
         } />
 
-        {/* Organizer can also access admin stats? Example hierarchical */}
+        {/* Organizer */}
         <Route path='/organizer' element={
           <ProtectedRoute requireAtLeast="organizer">
             <Dashboard />

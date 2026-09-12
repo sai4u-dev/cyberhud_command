@@ -98,6 +98,38 @@ const userSchema = new mongoose.Schema(
       default: "active",
     },
     lastLogin: Date,
+    // Theme based settings - integrated with MongoDB
+    selectedTheme: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Theme",
+      default: null,
+    },
+    // Alias for quick lookup without populate
+    themeKey: {
+      type: String,
+      default: "cyber-neon",
+    },
+    settings: {
+      theme: { type: String, default: "cyber-neon" }, // mirror themeKey for redundancy
+      notifications: {
+        battleInvites: { type: Boolean, default: true },
+        tournamentUpdates: { type: Boolean, default: true },
+        marketing: { type: Boolean, default: false },
+      },
+      sound: {
+        master: { type: Number, default: 80, min: 0, max: 100 },
+        sfx: { type: Number, default: 80, min: 0, max: 100 },
+        music: { type: Number, default: 60, min: 0, max: 100 },
+      },
+      graphics: {
+        quality: { type: String, enum: ["low", "medium", "high", "ultra"], default: "high" },
+        motion: { type: Boolean, default: true },
+      },
+      privacy: {
+        showStats: { type: Boolean, default: true },
+        allowChallenges: { type: Boolean, default: true },
+      },
+    },
   },
   { timestamps: true }
 );

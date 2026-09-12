@@ -23,16 +23,31 @@ export default function Navbar() {
         </h1>
       </Link>
 
-      <nav className="hidden md:flex gap-6 items-center h-full font-headline text-sm uppercase tracking-widest">
-        <Link to="/" className="text-slate-400 hover:text-cyan-300 transition-colors py-2">Mission_Control</Link>
-        <Link to="/battlezone" className="text-slate-400 hover:text-cyan-300 transition-colors py-2">BattleZone</Link>
-        <Link to="/achievementsmissions" className="text-slate-400 hover:text-cyan-300 transition-colors py-2">Archive</Link>
+      <nav className="hidden lg:flex gap-4 items-center h-full font-headline text-[13px] uppercase tracking-widest">
+        <Link to="/" className="text-slate-400 hover:text-primary transition-colors py-2">Home</Link>
+        <Link to="/battles" className="text-slate-400 hover:text-primary transition-colors py-2">Battles</Link>
+        <div className="relative group">
+          <button className="text-slate-400 hover:text-primary transition-colors py-2 flex items-center gap-1">Arenas <span className="material-symbols-outlined text-xs">expand_more</span></button>
+          <div className="absolute top-full left-0 hidden group-hover:flex flex-col bg-surface-container border border-white/10 min-w-48 p-2 gap-1">
+            <Link to="/battles/one-to-one" className="px-3 py-2 hover:bg-primary/10 hover:text-primary text-xs">1 vs 1 Duel</Link>
+            <Link to="/battles/one-to-many" className="px-3 py-2 hover:bg-secondary/10 hover:text-secondary text-xs">1 vs N Squad</Link>
+            <Link to="/battlezone" className="px-3 py-2 hover:bg-white/5 text-xs">BattleZone Map</Link>
+          </div>
+        </div>
+        <Link to="/arsenal" className="text-slate-400 hover:text-primary transition-colors py-2">Arsenal</Link>
+        <Link to="/market" className="text-slate-400 hover:text-primary transition-colors py-2">Market</Link>
+        <Link to="/leaderboard" className="text-slate-400 hover:text-primary transition-colors py-2">Leaderboard</Link>
+        <Link to="/tournament" className="text-slate-400 hover:text-primary transition-colors py-2">Tournament</Link>
+        <Link to="/settings" className="text-slate-400 hover:text-primary transition-colors py-2 flex items-center gap-1"><span className="material-symbols-outlined text-sm">palette</span> Themes</Link>
         {user?.role === "admin" && (
           <Link to="/admin" className="text-secondary hover:text-secondary/80 transition-colors py-2">Admin</Link>
         )}
       </nav>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
+        <Link to="/settings" className="w-8 h-8 hidden md:flex items-center justify-center border border-white/10 hover:border-primary hover:text-primary transition-colors">
+          <span className="material-symbols-outlined text-sm">settings</span>
+        </Link>
         {isAuthenticated ? (
           <>
             <div className="hidden sm:flex flex-col items-end bg-surface-container px-3 py-1 border border-primary/20">
@@ -41,9 +56,10 @@ export default function Navbar() {
                 <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse inline-block" /> ONLINE
               </span>
             </div>
-            <Link to="/dashboard" className="w-9 h-9 border border-primary/30 bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors">
+            <Link to="/profile" className="w-9 h-9 border border-primary/30 bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors">
               <span className="material-symbols-outlined text-primary text-xl">account_circle</span>
             </Link>
+            <Link to="/dashboard" className="hidden md:flex px-3 py-2 border border-white/10 text-xs font-label uppercase tracking-widest hover:bg-white/5">Dashboard</Link>
             <button
               onClick={handleLogout}
               className="hidden md:block px-4 py-2 bg-transparent border border-white/10 text-xs font-label uppercase tracking-widest hover:border-primary hover:text-primary transition-all"

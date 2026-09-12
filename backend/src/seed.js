@@ -2,6 +2,8 @@ import dotenv from "dotenv";
 dotenv.config();
 import mongoose from "mongoose";
 import User from "./models/User.js";
+import Theme, { DEFAULT_THEMES } from "./models/Theme.js";
+import Battle from "./models/Battle.js";
 
 const users = [
   {
@@ -49,6 +51,55 @@ const seed = async () => {
       }
       await User.create(u);
       console.log(`Created ${u.role}: ${u.email} / ${u.password}`);
+    }
+
+    console.log("\nSeeding themes (10 themes)...");
+    for (const t of DEFAULT_THEMES) {
+      const exists = await Theme.findOne({ key: t.key });
+      if (exists) {
+        // update to keep colors in sync
+        await Theme.updateOne({ key: t.key }, { $set: t });
+        console.log(`Updated theme ${t.key}`);
+      } else {
+        await Theme.create(t);
+        console.log(`Created theme ${t.key} - ${t.name}`);
+      }
+    }
+    const themeCount = await Theme.countDocuments();
+    console.log(`Total themes: ${themeCount}`);
+
+    // Create demo battles if none
+    const battleCount = await Battle.countDocuments();
+    if (battleCount === 0) {
+      const admin = await User.findOne({ email: "admin@cyberhud.io" });
+      const player = await User.findOne({ email: "player@cyberhud.io" });
+      if (admin && player) {
+        await Battle.create({
+          title: "NEURAL_DUEL_ALPHA",
+          description: "1v1 ranked duel — first to breach the core wins",
+          type: "one_to_one",
+          host: admin._id,
+          maxParticipants: 2,
+          mode: "ranked",
+          mapZone: { name: "NEURAL_GRID_ALPHA" },
+          participants: [
+            { user: admin._id, username: admin.username, displayName: admin.displayName, role: "host", isReady: true },
+          ],
+        });
+        await Battle.create({
+          title: "VOID_ROYALE_SQUAD",
+          description: "1vN squad assault — 8 operators, last team standing",
+          type: "one_to_many",
+          host: player._id,
+          maxParticipants: 8,
+          mode: "casual",
+          mapZone: { name: "VOID_SECTOR_7" },
+          participants: [
+            { user: player._id, username: player.username, displayName: player.displayName, role: "host", isReady: true },
+          ],
+        });
+        console.log("Created demo battles (1v1 & 1vN)");
+      }
     }
 
     console.log("\nSeeding complete. Credentials:");

@@ -18,7 +18,7 @@ export const protect = async (req, res, next) => {
     }
 
     const decoded = verifyAccessToken(token);
-    const user = await User.findById(decoded.id).select("-password");
+    const user = await User.findById(decoded.id).select("-password").populate("selectedTheme");
 
     if (!user) throw new ApiError(401, "User not found for this token");
     if (user.status !== "active") throw new ApiError(403, `Account is ${user.status}. Contact support.`);
@@ -41,7 +41,7 @@ export const optionalAuth = async (req, _res, next) => {
     }
     if (token) {
       const decoded = verifyAccessToken(token);
-      const user = await User.findById(decoded.id).select("-password");
+      const user = await User.findById(decoded.id).select("-password").populate("selectedTheme");
       if (user) req.user = user;
     }
     next();

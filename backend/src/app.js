@@ -7,6 +7,8 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
+import themeRoutes from "./routes/theme.routes.js";
+import battleRoutes from "./routes/battle.routes.js";
 import errorHandler from "./middlewares/errorHandler.js";
 
 const app = express();
@@ -54,6 +56,8 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/themes", themeRoutes);
+app.use("/api/battles", battleRoutes);
 
 // 404
 app.use((req, res) => {
