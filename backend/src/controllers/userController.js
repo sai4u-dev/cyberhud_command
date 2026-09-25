@@ -1,6 +1,9 @@
 import User from "../models/User.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
+import { cacheDel } from "../config/redis.js";
+
+const bustUserCaches = () => cacheDel("users:*").catch(() => {});
 
 export const getAllUsers = async (req, res, next) => {
   try {
@@ -60,6 +63,7 @@ export const updateUserRole = async (req, res, next) => {
     user.role = role;
     await user.save();
 
+    bustUserCaches();
     res.status(200).json(new ApiResponse(200, { user: user.toSafeObject() }, "Role updated"));
   } catch (err) {
     next(err);
@@ -72,6 +76,7 @@ export const banUser = async (req, res, next) => {
     if (!user) throw new ApiError(404, "User not found");
     user.status = user.status === "banned" ? "active" : "banned";
     await user.save();
+    bustUserCaches();
     res.status(200).json(new ApiResponse(200, { user: user.toSafeObject() }, `User ${user.status}`));
   } catch (err) {
     next(err);
@@ -82,6 +87,7 @@ export const deleteUser = async (req, res, next) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
     if (!user) throw new ApiError(404, "User not found");
+    bustUserCaches();
     res.status(200).json(new ApiResponse(200, null, "User deleted"));
   } catch (err) {
     next(err);

@@ -1,9 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, Suspense } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import CyberCore from "../components/canvas/CyberCore";
+import CyberWarrior from "../components/canvas/CyberWarrior";
+import { TrustedBy, HowItWorks, ModesExpanded, LiveBattlesStrip, Operators, TournamentPrize, ArsenalTease, Roadmap, Community, FAQ } from "../components/landing/LandingSections";
 import anime from "animejs";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -59,61 +60,66 @@ export default function EnhancedLandingPage() {
     <div ref={heroRef} className="bg-background text-on-surface selection:bg-primary selection:text-black overflow-x-hidden">
       <div className="fixed inset-0 scanlines z-50 opacity-10 pointer-events-none" />
 
-      {/* HERO with 3D */}
-      <motion.section style={{ scale, opacity }} className="relative min-h-[90vh] flex items-center overflow-hidden pt-16">
+      {/* HERO — Full Width / Full Screen 3D with THE FUTURE OF GAMING + Playable Warrior */}
+      <section className="relative h-screen w-full overflow-hidden flex items-center justify-center">
+        {/* 3D Warrior — Full Screen Background (playable) */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10" />
-          <div className="absolute inset-0 bg-black/50 z-10" />
-          <img className="w-full h-full object-cover grayscale-[0.2] contrast-[1.1]" alt="cyber city"
+          <Suspense fallback={<div className="w-full h-full bg-black flex items-center justify-center text-slate-500">Loading Warrior…</div>}>
+            <CyberWarrior className="w-full h-full" enableZoom={false} />
+          </Suspense>
+          {/* Subtle city overlay behind warrior for depth — low opacity */}
+          <img className="absolute inset-0 w-full h-full object-cover grayscale-[0.35] contrast-[1.15] opacity-[0.18] pointer-events-none" alt="cyber city"
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtQuSRdBg3T_g_weKJgV9JXeTI2USnFgh46sOMzU6Bs23KH-8suRJnCUlrccy1fa8Q6RT0P5DrU0ZNRK3oBsBwapB74B9te32ydtY9Ym2TIeFFBNgwZC3k-J4bBp2xcrQGxSAtdTiyhxAAqIjcVJ2ZxnHY2EBrVWKdfECz3-dFWoIZDc90KLHi5Iu9lZxPZrtl1nM_u9NOcJgdTjnka_hdfCbUV2R0rPasXzr6oBascpR6gvsLrRekznYOUk-Q5U3HQQtTaP7Z1WM" />
+          {/* Gradient for text readability — keeps warrior visible */}
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/35 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/45 via-transparent to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-black/10 pointer-events-none" />
         </div>
 
-        <div className="relative z-20 max-w-7xl mx-auto px-6 w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-center py-12">
-          <div>
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-              className="inline-block mb-6 px-4 py-1 border border-primary/30 bg-primary/5 backdrop-blur-md">
-              <span className="font-label text-primary text-xs tracking-[0.3em] uppercase">System Status: Optimal • 128K Operators Online</span>
-            </motion.div>
+        {/* THE FUTURE OF GAMING — Centered on 3D model (playable warrior behind) */}
+        <div className="relative z-10 w-full max-w-6xl mx-auto px-6 flex flex-col items-center text-center py-20 pointer-events-none">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+            className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 border border-primary/30 bg-black/55 backdrop-blur-md pointer-events-auto">
+            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            <span className="font-label text-primary text-xs tracking-[0.3em] uppercase">System Status: Optimal • 128K Operators Online • Playable 3D</span>
+          </motion.div>
 
-            <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter leading-[0.9] glow-text">
-              <span className="hero-word inline-block overflow-hidden">THE</span>{" "}
-              <span className="hero-word inline-block overflow-hidden text-primary">FUTURE</span>
-              <br />
-              <span className="hero-word inline-block overflow-hidden">OF GAMING</span>
-            </h1>
+          <h1 className="font-display text-5xl md:text-7xl lg:text-[88px] font-bold tracking-tighter leading-[0.88] glow-text drop-shadow-[0_2px_24px_rgba(0,0,0,0.85)] pointer-events-none">
+            <span className="hero-word inline-block">THE</span>{" "}
+            <span className="hero-word inline-block text-primary">FUTURE</span>
+            <br />
+            <span className="hero-word inline-block">OF GAMING</span>
+          </h1>
 
-            <p className="hero-cta text-slate-300 max-w-xl mt-6 text-base md:text-lg leading-relaxed">
-              Enter the neural grid. Battle solo or squad. Climb ranks, claim shards, own the void. Built for high-frequency combat at 120fps.
-            </p>
+          <p className="hero-cta text-slate-200 max-w-2xl mt-5 text-base md:text-[18px] leading-relaxed drop-shadow-[0_1px_12px_rgba(0,0,0,0.9)] bg-black/25 backdrop-blur-sm px-4 py-2 border border-white/5 pointer-events-none">
+            Enter the neural grid. <span className="text-white font-bold">Play</span> with the warrior — <span className="text-primary">WASD</span> to move, <span className="text-primary">Click / Space</span> to slash, <span className="text-primary">Drag</span> to orbit. Battle solo or squad at 120fps.
+          </p>
 
-            <div className="hero-cta flex flex-col sm:flex-row gap-4 mt-8">
-              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                <Link to="/register" className="group relative bg-primary text-black px-8 py-4 font-bold uppercase tracking-widest flex items-center gap-2 hover:brightness-110 transition-all">
-                  ENTER THE NEURAL LINK
-                  <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                </Link>
-              </motion.div>
-              <Link to="/battlezone" className="px-8 py-4 border border-white/20 font-bold uppercase tracking-widest hover:bg-white/5 transition-all text-sm text-center">
-                Explore BattleZones
+          <div className="hero-cta flex flex-col sm:flex-row gap-3 mt-7 pointer-events-auto">
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+              <Link to="/register" className="group relative bg-primary text-black px-8 py-4 font-black uppercase tracking-widest flex items-center gap-2 hover:brightness-110 transition-all shadow-[0_0_24px_rgba(143,245,255,0.35)] pointer-events-auto">
+                ENTER THE NEURAL LINK
+                <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
               </Link>
-            </div>
-
-            <div className="hero-cta flex gap-6 mt-8 text-[10px] font-label uppercase tracking-widest text-slate-500">
-              <span className="flex items-center gap-2"><span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" /> 14 Tournaments Live</span>
-              <span>• 4,200 ETH Prize Pool</span>
-            </div>
+            </motion.div>
+            <Link to="/battlezone" className="px-8 py-4 bg-black/60 backdrop-blur-md border border-white/20 font-bold uppercase tracking-widest hover:bg-white/10 transition-all text-sm text-center text-white pointer-events-auto">
+              Explore BattleZones
+            </Link>
           </div>
 
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.6, ease: "easeOut" }}
-            className="relative">
-            <CyberCore className="w-full h-[420px] md:h-[560px]" />
-            <div className="absolute bottom-6 left-6 right-6 glass-panel p-4 border border-primary/10 hidden md:block">
-              <p className="text-[10px] font-headline tracking-widest text-primary">CYBER_CORE_V2 • 3D REAL-TIME</p>
-              <p className="text-xs text-slate-400 mt-1">Drag to orbit • Scroll to explore • Powered by Three.js + React Three Fiber</p>
-            </div>
-          </motion.div>
+          <div className="hero-cta flex flex-wrap justify-center gap-4 md:gap-6 mt-6 text-[11px] font-label uppercase tracking-widest pointer-events-none">
+            <span className="flex items-center gap-2 bg-black/55 backdrop-blur px-3 py-1.5 border border-white/10 text-slate-300"><span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" /> 14 Tournaments Live</span>
+            <span className="flex items-center gap-2 bg-black/55 backdrop-blur px-3 py-1.5 border border-white/10 text-slate-300">4,200 ETH Prize Pool</span>
+            <span className="hidden md:flex items-center gap-2 bg-primary/15 backdrop-blur px-3 py-1.5 border border-primary/20 text-primary">▶ PLAYABLE — WASD + CLICK</span>
+          </div>
         </div>
-      </motion.section>
+
+        {/* Scroll indicator */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4 }} className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 pointer-events-none">
+          <span className="text-[10px] font-headline tracking-[0.2em] uppercase text-slate-400">Scroll ↓</span>
+          <span className="w-px h-8 bg-gradient-to-b from-slate-400 to-transparent animate-pulse" />
+        </motion.div>
+      </section>
 
       {/* STATS */}
       <section ref={statsRef} className="py-16 px-6 max-w-7xl mx-auto">
@@ -190,18 +196,31 @@ export default function EnhancedLandingPage() {
         </div>
       </section>
 
+      <TrustedBy />
+      <HowItWorks />
+      <ModesExpanded />
+      <LiveBattlesStrip />
+      <Operators />
+      <TournamentPrize />
+      <ArsenalTease />
+      <Roadmap />
+      <Community />
+      <FAQ />
+
       {/* CTA */}
       <section className="py-24 px-6 relative overflow-hidden">
         <div className="absolute inset-0 bg-primary/5" />
         <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 blur-[120px] rounded-full" />
         <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-secondary/10 blur-[120px] rounded-full" />
         <div className="max-w-4xl mx-auto text-center relative z-10 glass-panel p-10 md:p-16 border border-primary/10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary text-black text-[11px] font-black tracking-widest mb-4">SMOOTH 60FPS • READY TO PLAY</div>
           <h2 className="font-display text-4xl md:text-5xl font-bold uppercase tracking-tight">INITIALIZE <br /> YOUR_LEGACY</h2>
-          <p className="text-slate-400 max-w-xl mx-auto mt-4">Join elite operators carving paths through the neural grid. Secure your ID and claim starting credits.</p>
+          <p className="text-slate-400 max-w-xl mx-auto mt-4">Join elite operators carving paths through the neural grid. Secure your ID and claim starting credits. Instant payouts.</p>
           <div className="mt-8 flex flex-col md:flex-row gap-4 justify-center">
             <Link to="/register" className="bg-primary text-black px-10 py-4 font-bold uppercase tracking-widest hover:brightness-110">Create Account</Link>
             <Link to="/login" className="px-10 py-4 border border-white/20 font-bold uppercase tracking-widest hover:bg-white/5 text-sm">Already Linked? Login</Link>
           </div>
+          <p className="text-[11px] text-slate-600 mt-4">Terms & Privacy apply • Play responsibly</p>
         </div>
       </section>
 

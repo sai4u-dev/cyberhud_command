@@ -12,7 +12,13 @@ const validateRequest = (schema, property = "body") => {
       return next(new ApiError(400, "Validation failed", errors));
     }
 
-    req[property] = value;
+    // req.query is getter-only in newer Express — merge instead of replace
+    if (property === "query") {
+      Object.keys(req.query || {}).forEach((k) => delete req.query[k]);
+      Object.assign(req.query || {}, value);
+    } else {
+      req[property] = value;
+    }
     next();
   };
 };

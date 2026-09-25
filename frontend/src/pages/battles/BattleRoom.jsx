@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBattleById, joinBattle, leaveBattle, startBattle, finishBattle } from "../../features/battle/battleSlice";
 import { motion } from "framer-motion";
+import PlayableArena from "../../components/battle/PlayableArena";
 
 export default function BattleRoom() {
   const { id } = useParams();
@@ -11,6 +12,7 @@ export default function BattleRoom() {
   const { currentBattle: battle, status } = useSelector((s) => s.battle);
   const { user } = useSelector((s) => s.auth);
   const [countdown, setCountdown] = useState(null);
+  const [playMode, setPlayMode] = useState(false);
 
   useEffect(() => {
     if (id) dispatch(fetchBattleById(id));
@@ -26,6 +28,11 @@ export default function BattleRoom() {
       return () => clearInterval(interval);
     }
   }, [battle]);
+
+  // Auto-enter play mode when battle goes in_progress
+  useEffect(() => {
+    if (battle?.status === "in_progress") setPlayMode(true);
+  }, [battle?.status]);
 
   if (!battle && status !== "loading") {
     return <div className="pt-32 text-center text-slate-500">Battle not found. <button onClick={() => navigate("/battles")} className="text-primary underline">Back to lobby</button></div>;
@@ -108,36 +115,59 @@ export default function BattleRoom() {
             </div>
           </div>
 
-          {/* Arena mock */}
-          <div className="mt-6 glass-panel p-6 border border-white/5">
-            <h3 className="font-headline text-xs font-bold tracking-widest flex items-center gap-2"><span className="w-2 h-4 bg-primary inline-block" /> BATTLE_ARENA</h3>
-            <div className="mt-4 relative h-64 bg-black/40 border border-white/5 overflow-hidden flex items-center justify-center">
-              <div className="absolute inset-0 opacity-20" style={{ backgroundImage: `linear-gradient(var(--color-primary) 1px, transparent 1px), linear-gradient(90deg, var(--color-primary) 1px, transparent 1px)`, backgroundSize: "30px 30px" }} />
-              {battle.status === "waiting" ? (
-                <div className="relative z-10 text-center">
-                  <span className="material-symbols-outlined text-5xl text-primary animate-pulse">swords</span>
-                  <p className="font-display uppercase mt-2">Awaiting Deployment</p>
-                  <p className="text-xs text-slate-500">{battle.participants.length}/{battle.maxParticipants} ready</p>
-                </div>
-              ) : battle.status === "in_progress" ? (
-                <motion.div animate={{ scale: [1, 1.02, 1] }} transition={{ repeat: Infinity, duration: 1.5 }} className="relative z-10 text-center">
-                  <p className="font-display text-2xl text-tertiary">COMBAT_ACTIVE</p>
-                  <div className="w-32 h-1 bg-white/10 mx-auto mt-3 overflow-hidden">
-                    <motion.div animate={{ x: ["-100%", "100%"] }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }} className="h-full w-1/2 bg-tertiary" />
+          {/* Playable Arena */}
+          <div className="mt-6 glass-panel p-4 border border-white/5">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="font-headline text-xs font-bold tracking-widest flex items-center gap-2"><span className="w-2 h-4 bg-primary inline-block" /> BATTLE_ARENA • {battle.type === "one_to_one" ? "1V1" : "1VN"} {playMode ? "— PLAYABLE" : ""}</h3>
+              <div className="flex gap-2">
+                <button onClick={() => setPlayMode(!playMode)} className={`px-3 py-1 text-[10px] font-headline uppercase tracking-widest border ${playMode ? "bg-primary text-black border-primary" : "border-white/10 hover:border-primary/30"}`}>{playMode ? "Exit Play" : "▶ Play"}</button>
+                <span className={`text-[10px] px-2 py-1 border font-headline uppercase ${battle.status === "in_progress" ? "bg-tertiary/10 text-tertiary border-tertiary/20 animate-pulse" : "bg-white/5 text-slate-500"}`}>{battle.status}</span>
+              </div>
+            </div>
+
+            {playMode ? (
+              <PlayableArena
+                mode={battle.type}
+                onVictory={async (score) => {
+                  // if host, auto-finish battle with victory
+                  if (isHost && battle.status === "in_progress") {
+                    await dispatch(finishBattle({ id: battle._id, winnerId: user._id }));
+                    dispatch(fetchBattleById(battle._id));
+                  }
+                }}
+                onDefeat={async () => {
+                  if (isHost && battle.status === "in_progress" && battle.participants.length > 1) {
+                    // pick opponent as winner
+                    const winner = battle.participants.find((p) => (p.user?._id || p.user) !== user._id);
+                    if (winner) await dispatch(finishBattle({ id: battle._id, winnerId: winner.user?._id || winner.user }));
+                  }
+                }}
+                onExit={() => setPlayMode(false)}
+              />
+            ) : (
+              <div className="relative h-64 bg-black/40 border border-white/5 overflow-hidden flex items-center justify-center">
+                <div className="absolute inset-0 opacity-20" style={{ backgroundImage: `linear-gradient(var(--color-primary) 1px, transparent 1px), linear-gradient(90deg, var(--color-primary) 1px, transparent 1px)`, backgroundSize: "30px 30px" }} />
+                {battle.status === "waiting" ? (
+                  <div className="relative z-10 text-center">
+                    <span className="material-symbols-outlined text-5xl text-primary animate-pulse">swords</span>
+                    <p className="font-display uppercase mt-2">Awaiting Deployment</p>
+                    <p className="text-xs text-slate-500">{battle.participants.length}/{battle.maxParticipants} ready</p>
+                    <button onClick={() => setPlayMode(true)} className="mt-3 px-4 py-2 bg-primary text-black text-xs font-bold uppercase tracking-widest">Practice Solo Play</button>
                   </div>
-                </motion.div>
-              ) : (
-                <div className="relative z-10 text-center">
-                  <span className="material-symbols-outlined text-5xl text-slate-600">flag</span>
-                  <p className="font-display uppercase mt-2">Battle {battle.status}</p>
-                </div>
-              )}
-            </div>
-            <div className="mt-4 flex gap-2">
-              <button className="flex-1 py-2 bg-surface-container border border-white/10 text-xs font-bold uppercase tracking-widest hover:bg-white/5">Attack</button>
-              <button className="flex-1 py-2 bg-surface-container border border-white/10 text-xs font-bold uppercase tracking-widest hover:bg-white/5">Defend</button>
-              <button className="flex-1 py-2 bg-primary text-black text-xs font-bold uppercase tracking-widest">Special</button>
-            </div>
+                ) : battle.status === "in_progress" ? (
+                  <motion.div animate={{ scale: [1, 1.02, 1] }} transition={{ repeat: Infinity, duration: 1.5 }} className="relative z-10 text-center">
+                    <p className="font-display text-2xl text-tertiary">COMBAT_ACTIVE</p>
+                    <p className="text-xs text-slate-500 mt-1">Click Play to enter arena</p>
+                    <button onClick={() => setPlayMode(true)} className="mt-3 px-6 py-2 bg-tertiary text-black font-bold uppercase tracking-widest">Enter Arena →</button>
+                  </motion.div>
+                ) : (
+                  <div className="relative z-10 text-center">
+                    <span className="material-symbols-outlined text-5xl text-slate-600">flag</span>
+                    <p className="font-display uppercase mt-2">Battle {battle.status}</p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 

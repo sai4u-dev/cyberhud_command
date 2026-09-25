@@ -1,6 +1,11 @@
 import Battle, { BATTLE_STATUS, BATTLE_TYPES } from "../models/Battle.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
+import { cacheDel } from "../config/redis.js";
+import { emitBattleEvent } from "../realtime/io.js";
+
+// Bust list + leaderboard caches after any write (best-effort, never throws)
+const bustBattleCaches = () => cacheDel("battles:*").catch(() => {});
 
 // Helper to populate participant user info
 const populateBattle = (query) =>
@@ -50,6 +55,8 @@ export const createBattle = async (req, res, next) => {
     });
 
     const populated = await populateBattle(Battle.findById(battle._id));
+    bustBattleCaches();
+    emitBattleEvent(battle._id, "battle:created", { battle: populated });
     res.status(201).json(new ApiResponse(201, { battle: populated }, "Battle created"));
   } catch (err) {
     next(err);
@@ -141,6 +148,8 @@ export const joinBattle = async (req, res, next) => {
     await battle.save();
 
     const populated = await populateBattle(Battle.findById(battle._id));
+    bustBattleCaches();
+    emitBattleEvent(battle._id, "battle:joined", { username: req.user.username });
     res.status(200).json(new ApiResponse(200, { battle: populated }, "Joined battle"));
   } catch (err) {
     next(err);
@@ -171,6 +180,8 @@ export const leaveBattle = async (req, res, next) => {
 
     await battle.save();
     const populated = await populateBattle(Battle.findById(battle._id));
+    bustBattleCaches();
+    emitBattleEvent(battle._id, "battle:left", { username: req.user.username });
     res.status(200).json(new ApiResponse(200, { battle: populated }, "Left battle"));
   } catch (err) {
     next(err);
@@ -190,6 +201,7 @@ export const toggleReady = async (req, res, next) => {
     await battle.save();
 
     const populated = await populateBattle(Battle.findById(battle._id));
+    emitBattleEvent(battle._id, "battle:ready", { username: req.user.username, isReady: participant.isReady });
     res.status(200).json(new ApiResponse(200, { battle: populated }, `Ready: ${participant.isReady}`));
   } catch (err) {
     next(err);
@@ -215,6 +227,8 @@ export const startBattle = async (req, res, next) => {
     await battle.save();
 
     const populated = await populateBattle(Battle.findById(battle._id));
+    bustBattleCaches();
+    emitBattleEvent(battle._id, "battle:started", { startedBy: req.user.username });
     res.status(200).json(new ApiResponse(200, { battle: populated }, "Battle started"));
   } catch (err) {
     next(err);
@@ -269,6 +283,9 @@ export const finishBattle = async (req, res, next) => {
     }
 
     const populated = await populateBattle(Battle.findById(battle._id));
+    bustBattleCaches();
+    cacheDel("users:*").catch(() => {});
+    emitBattleEvent(battle._id, "battle:finished", { winner: battle.winner });
     res.status(200).json(new ApiResponse(200, { battle: populated }, "Battle completed"));
   } catch (err) {
     next(err);
@@ -289,6 +306,8 @@ export const cancelBattle = async (req, res, next) => {
     await battle.save();
 
     const populated = await populateBattle(Battle.findById(battle._id));
+    bustBattleCaches();
+    emitBattleEvent(battle._id, "battle:cancelled", { cancelledBy: req.user.username });
     res.status(200).json(new ApiResponse(200, { battle: populated }, "Battle cancelled"));
   } catch (err) {
     next(err);

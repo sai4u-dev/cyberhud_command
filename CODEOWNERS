@@ -1,0 +1,6 @@
+# Default owners — replace @org/team with real handles.
+* @sai4u-dev
+/backend/ @sai4u-dev
+/frontend/ @sai4u-dev
+/docs/ @sai4u-dev
+/.github/ @sai4u-dev

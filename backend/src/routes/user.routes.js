@@ -13,8 +13,10 @@ import {
 
 const router = express.Router();
 
-// Public leaderboard
-router.get("/leaderboard", getLeaderboard);
+import { cacheMiddleware } from "../config/redis.js";
+
+// Public leaderboard — cached 60s (read-heavy, safe stale window)
+router.get("/leaderboard", cacheMiddleware("users:leaderboard", 60), getLeaderboard);
 
 // All below require auth
 router.use(protect);

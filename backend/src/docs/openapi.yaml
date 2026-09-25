@@ -1,0 +1,310 @@
+openapi: 3.0.3
+info:
+  title: CYBERHUD_COMMAND API
+  version: 1.0.0
+  description: |
+    Battling Gaming Zone — auth (JWT rotation), RBAC users, battles lifecycle,
+    themes, admin stats. All responses use `{ success, message, data, requestId? }`.
+    Interactive docs served at `/api/docs`.
+servers:
+  - url: http://localhost:5000/api
+    description: Local
+  - url: https://api.cyberhud.example.com/api
+    description: Production (override)
+security:
+  - bearerAuth: []
+  - cookieAuth: []
+tags:
+  - name: health
+  - name: auth
+  - name: users
+  - name: battles
+  - name: themes
+  - name: admin
+paths:
+  /health:
+    get:
+      tags: [health]
+      security: []
+      summary: Liveness + dependency summary
+      responses:
+        '200': { description: Online }
+        '503': { description: Degraded }
+  /live:
+    get:
+      tags: [health]
+      security: []
+      summary: Kubernetes liveness probe
+      responses: { '200': { description: Alive } }
+  /ready:
+    get:
+      tags: [health]
+      security: []
+      summary: Kubernetes readiness probe (requires MongoDB ping)
+      responses:
+        '200': { description: Ready }
+        '503': { description: Not ready }
+  /metrics:
+    get:
+      tags: [health]
+      security: []
+      summary: Prometheus metrics
+      responses: { '200': { description: Prometheus exposition format } }
+
+  /auth/register:
+    post:
+      tags: [auth]
+      security: []
+      summary: Register (always role=user; elevated roles rejected)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterInput'
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/AuthPayload' } } } }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409': { description: User exists }
+  /auth/login:
+    post:
+      tags: [auth]
+      security: []
+      summary: Login (sets httpOnly access+refresh cookies, returns tokens)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginInput'
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/AuthPayload' } } } }
+        '401': { description: Invalid credentials }
+  /auth/refresh:
+    post:
+      tags: [auth]
+      security: []
+      summary: Rotate tokens (cookie or body refreshToken)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: { refreshToken: { type: string } }
+      responses:
+        '200': { description: Rotated }
+        '401': { description: Invalid refresh token }
+  /auth/logout:
+    post:
+      tags: [auth]
+      security: []
+      summary: Logout (revokes presented refresh token, clears cookies)
+      responses: { '200': { description: Logged out } }
+  /auth/me:
+    get:
+      tags: [auth]
+      summary: Current user
+      responses: { '200': { description: OK } }
+
+  /users/leaderboard:
+    get:
+      tags: [users]
+      security: []
+      summary: Top 50 by XP (cached 60s, X-Cache header)
+      responses: { '200': { description: OK } }
+  /users:
+    get:
+      tags: [users]
+      summary: List users (moderator+), paginated ?page&limit&search&role
+      responses: { '200': { description: OK } }
+  /users/{id}:
+    get:
+      tags: [users]
+      summary: Get user by id (any authenticated)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: OK }
+        '404': { description: Not found }
+  /users/{id}/role:
+    patch:
+      tags: [users]
+      summary: Change role (admin only)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role]
+              properties: { role: { type: string, enum: [user, moderator, organizer, admin] } }
+      responses: { '200': { description: Updated } }
+  /users/{id}/ban:
+    patch:
+      tags: [users]
+      summary: Toggle ban (moderator+)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses: { '200': { description: Toggled } }
+
+  /battles:
+    get:
+      tags: [battles]
+      security: []
+      summary: List open battles (?type&status&mode&search&page&limit)
+      responses: { '200': { description: OK } }
+    post:
+      tags: [battles]
+      summary: Create battle (idempotent with Idempotency-Key header)
+      parameters:
+        - { name: Idempotency-Key, in: header, required: false, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateBattleInput' }
+      responses:
+        '201': { description: Created }
+        '400': { $ref: '#/components/responses/BadRequest' }
+  /battles/leaderboard:
+    get:
+      tags: [battles]
+      security: []
+      summary: Most battle wins (cached 30s)
+      responses: { '200': { description: OK } }
+  /battles/my:
+    get:
+      tags: [battles]
+      summary: My battles
+      responses: { '200': { description: OK } }
+  /battles/{id}:
+    get:
+      tags: [battles]
+      security: []
+      summary: Battle by id
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses: { '200': { description: OK }, '404': { description: Not found } }
+  /battles/{id}/join:
+    post:
+      tags: [battles]
+      summary: Join waiting battle
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: Idempotency-Key, in: header, required: false, schema: { type: string } }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: { password: { type: string } }
+      responses: { '200': { description: Joined }, '400': { description: Cannot join (full/closed/already in) } }
+  /battles/{id}/leave:
+    post:
+      tags: [battles]
+      summary: Leave battle
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses: { '200': { description: Left } }
+  /battles/{id}/ready:
+    post:
+      tags: [battles]
+      summary: Toggle ready
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses: { '200': { description: Toggled } }
+  /battles/{id}/start:
+    post:
+      tags: [battles]
+      summary: Start battle (host only, state waiting→in_progress)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses: { '200': { description: Started }, '403': { description: Host only } }
+  /battles/{id}/finish:
+    post:
+      tags: [battles]
+      summary: Finish battle (host/admin, awards XP+credits)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: { winnerId: { type: string, nullable: true } }
+      responses: { '200': { description: Completed } }
+  /battles/{id}/cancel:
+    post:
+      tags: [battles]
+      summary: Cancel battle (host/admin)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses: { '200': { description: Cancelled } }
+
+  /themes:
+    get:
+      tags: [themes]
+      security: []
+      summary: List themes
+      responses: { '200': { description: OK } }
+  /admin/stats:
+    get:
+      tags: [admin]
+      summary: Dashboard stats (admin only)
+      responses: { '200': { description: OK }, '403': { description: Forbidden } }
+
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+    cookieAuth: { type: apiKey, in: cookie, name: accessToken }
+  schemas:
+    RegisterInput:
+      type: object
+      required: [username, email, password]
+      properties:
+        username: { type: string, pattern: '^[a-zA-Z0-9_-]+$', minLength: 3, maxLength: 30 }
+        email: { type: string, format: email }
+        password: { type: string, minLength: 8, description: Upper+lower+digit+special }
+        displayName: { type: string, maxLength: 50 }
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string }
+    AuthPayload:
+      type: object
+      properties:
+        success: { type: boolean }
+        message: { type: string }
+        data:
+          type: object
+          properties:
+            user: { type: object }
+            accessToken: { type: string }
+            refreshToken: { type: string }
+    CreateBattleInput:
+      type: object
+      required: [title, type]
+      properties:
+        title: { type: string, minLength: 3, maxLength: 80 }
+        description: { type: string, maxLength: 300 }
+        type: { type: string, enum: [one_to_one, one_to_many] }
+        mode: { type: string, enum: [ranked, casual, tournament] }
+        maxParticipants: { type: integer, minimum: 2, maximum: 32 }
+        entryFee: { type: number, minimum: 0 }
+        isPrivate: { type: boolean }
+        password: { type: string, nullable: true }
+  responses:
+    BadRequest:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success: { type: boolean, example: false }
+              message: { type: string }
+              errors: { type: array, items: { type: string } }

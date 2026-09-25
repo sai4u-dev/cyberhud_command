@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { useAuth } from "../../hooks/useAuth";
 import { logoutUser } from "../../features/auth/authSlice";
 import { motion } from "framer-motion";
+import soundManager from "../../utils/soundManager";
 
 export default function Navbar() {
   const { isAuthenticated, user } = useAuth();
@@ -10,6 +11,7 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
+    soundManager.playSfx("click");
     await dispatch(logoutUser());
     navigate("/");
   };

@@ -14,7 +14,7 @@ export default defineConfig({
             if (id.includes('react') || id.includes('redux') || id.includes('@reduxjs')) return 'vendor';
             if (id.includes('three') || id.includes('@react-three')) return 'three';
             if (id.includes('gsap') || id.includes('framer-motion') || id.includes('animejs')) return 'animation';
-            if (id.includes('@react-google-maps')) return 'maps';
+            if (id.includes('@react-google-maps') || id.includes('leaflet') || id.includes('react-leaflet')) return 'maps';
           }
         },
       },

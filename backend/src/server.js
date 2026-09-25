@@ -1,46 +1,80 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import app from "./app.js";
-import connectDB from "./config/db.js";
+import http from "node:http";
+import env from "./config/env.js";
+import logger from "./utils/logger.js";
+import app, { allowedOrigins } from "./app.js";
+import connectDB, { disconnectDB } from "./config/db.js";
+import { connectRedis, disconnectRedis } from "./config/redis.js";
+import { initRealtime } from "./realtime/io.js";
 
-const PORT = process.env.PORT || 5000;
+/**
+ * Production process lifecycle:
+ * - Validated env (config/env.js) before boot
+ * - DB + Redis connected before accepting traffic
+ * - Graceful shutdown drains HTTP keep-alives, sockets, DB, Redis
+ * - Unhandled rejections crash loudly (orchestrator restarts) instead of limping
+ */
 
-// Validate required env
-const requiredEnv = ["MONGO_URI", "JWT_ACCESS_SECRET", "JWT_REFRESH_SECRET"];
-const missing = requiredEnv.filter((k) => !process.env[k]);
-if (missing.length) {
-  console.error(`Missing required env vars: ${missing.join(", ")}`);
-  console.error("Check backend/.env.example and create backend/.env");
-  // Don't exit in development, just warn
-  if (process.env.NODE_ENV === "production") process.exit(1);
-}
+process.on("unhandledRejection", (reason) => {
+  logger.fatal({ err: reason }, "[process] unhandledRejection — exiting");
+  process.exit(1);
+});
+process.on("uncaughtException", (err) => {
+  logger.fatal({ err }, "[process] uncaughtException — exiting");
+  process.exit(1);
+});
+
+const PORT = env.PORT || 5000;
 
 const start = async () => {
-  if (process.env.MONGO_URI) {
-    await connectDB();
-  } else {
-    console.warn("MONGO_URI not set - running without DB (API will fail on DB operations)");
+  if (!process.env.MONGO_URI && env.isProduction) {
+    logger.fatal("[boot] MONGO_URI missing in production — refusing to boot");
+    process.exit(1);
   }
 
-  const server = app.listen(PORT, () => {
-    console.log(`\n⚡ CYBERHUD_COMMAND Backend online`);
-    console.log(`   → http://localhost:${PORT}/api/health`);
-    console.log(`   → Env: ${process.env.NODE_ENV || "development"}`);
-    console.log(`   → Frontend CORS: ${process.env.FRONTEND_URL || "http://localhost:5173"}\n`);
+  await connectDB();
+  await connectRedis();
+
+  const server = http.createServer(app);
+  initRealtime(server, allowedOrigins);
+
+  server.listen(PORT, "0.0.0.0", () => {
+    logger.info(
+      { port: PORT, env: env.NODE_ENV, cors: allowedOrigins },
+      "CYBERHUD_COMMAND backend online"
+    );
   });
 
-  // Graceful shutdown
-  const shutdown = () => {
-    console.log("\nShutting down gracefully...");
-    server.close(() => {
-      console.log("Server closed");
+  // Graceful shutdown — SIGTERM (k8s/ECS) + SIGINT (local)
+  let shuttingDown = false;
+  const shutdown = async (signal) => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    logger.info({ signal }, "[shutdown] draining…");
+
+    const forceExit = setTimeout(() => {
+      logger.error("[shutdown] forced exit after 15s");
+      process.exit(1);
+    }, 15000);
+    forceExit.unref?.();
+
+    try {
+      await new Promise((resolve) => server.close(resolve));
+      logger.info("[shutdown] http server closed");
+      await disconnectRedis();
+      await disconnectDB();
+      logger.info("[shutdown] clean exit");
       process.exit(0);
-    });
+    } catch (err) {
+      logger.error({ err }, "[shutdown] error during shutdown");
+      process.exit(1);
+    }
   };
 
-  process.on("SIGTERM", shutdown);
-  process.on("SIGINT", shutdown);
+  process.on("SIGTERM", () => shutdown("SIGTERM"));
+  process.on("SIGINT", () => shutdown("SIGINT"));
 };
 
 start();

@@ -1,7 +1,14 @@
 import express from "express";
 import { protect } from "../middlewares/auth.js";
-import { authorizeAtLeast } from "../middlewares/authorize.js";
-import { ROLES } from "../models/User.js";
+import validateRequest from "../middlewares/validateRequest.js";
+import idempotency from "../middlewares/idempotency.js";
+import { cacheMiddleware } from "../config/redis.js";
+import {
+  createBattleSchema,
+  joinBattleSchema,
+  finishBattleSchema,
+  battleQuerySchema,
+} from "../validators/battle.validator.js";
 import {
   createBattle,
   getBattles,
@@ -19,24 +26,24 @@ import {
 
 const router = express.Router();
 
-// Public leaderboard
-router.get("/leaderboard", getBattleLeaderboard);
+// Public leaderboard — cached 30s (hot path, safe to serve stale briefly)
+router.get("/leaderboard", cacheMiddleware("battles:leaderboard", 30), getBattleLeaderboard);
 
-// Protected - user specific (must be before /:id)
+// Protected — user specific (must be before /:id)
 router.get("/my", protect, getMyBattles);
 router.get("/code/:code", protect, getBattleByCode);
 
-// Public browsable (still accessible without auth for discovery)
-router.get("/", getBattles);
+// Public browsable with query validation
+router.get("/", validateRequest(battleQuerySchema, "query"), getBattles);
 router.get("/:id", getBattleById);
 
-// Create
-router.post("/", protect, createBattle);
-router.post("/:id/join", protect, joinBattle);
+// State-changing — idempotency-aware so retries never double-apply
+router.post("/", protect, validateRequest(createBattleSchema), idempotency, createBattle);
+router.post("/:id/join", protect, validateRequest(joinBattleSchema), idempotency, joinBattle);
 router.post("/:id/leave", protect, leaveBattle);
 router.post("/:id/ready", protect, toggleReady);
-router.post("/:id/start", protect, startBattle);
-router.post("/:id/finish", protect, finishBattle);
-router.post("/:id/cancel", protect, cancelBattle);
+router.post("/:id/start", protect, idempotency, startBattle);
+router.post("/:id/finish", protect, validateRequest(finishBattleSchema), idempotency, finishBattle);
+router.post("/:id/cancel", protect, idempotency, cancelBattle);
 
 export default router;
