@@ -86,31 +86,49 @@ export default function PlayableArena({ mode = "one_to_one", onVictory, onDefeat
     return () => clearInterval(iv);
   }, []);
 
-  // Victory / Defeat check
+  // Terminal outcome — derived during render (no setState-in-effect).
+  // When the outcome flips while playing, gameState + combat log adjust
+  // pre-commit (guarded: converges immediately); the terminal effect below
+  // fires sounds/callbacks exactly once.
+  const aliveBots = isOneToMany ? bots.filter((b) => b.alive) : null;
+  let outcome = null;
+  if (gameState === "playing") {
+    if (isOneToMany ? aliveBots.length === 0 : opponent.hp <= 0) outcome = "victory";
+    else if (player.hp <= 0) outcome = "defeat";
+  }
+  if (outcome !== null && outcome !== gameState) {
+    setGameState(outcome);
+    const msg =
+      outcome === "victory"
+        ? isOneToMany
+          ? "ALL BOTS ELIMINATED — VICTORY"
+          : "OPPONENT NEUTRALIZED — VICTORY"
+        : "YOU WERE ELIMINATED";
+    // Deterministic id + dedupe: the updater is idempotent, so StrictMode
+    // double-render can never append the terminal entry twice.
+    const id = `terminal-${outcome}`;
+    const entry = { id, msg, type: outcome, time: new Date().toLocaleTimeString() };
+    setLog((l) => (l.some((e) => e.id === id) ? l : [entry, ...l].slice(0, 8)));
+  }
+
+  // Terminal side-effects — exactly once per finished game (fired-guard
+  // protects against re-runs when callbacks/scores change identity mid-screen)
+  const terminalFiredRef = useRef(false);
   useEffect(() => {
-    if (isOneToMany) {
-      const alive = bots.filter((b) => b.alive);
-      if (alive.length === 0 && gameState === "playing") {
-        setGameState("victory");
-        addLog("ALL BOTS ELIMINATED — VICTORY", "victory");
-        soundManager.playSfx("victory");
-        onVictory?.(score);
-      }
-    } else {
-      if (opponent.hp <= 0 && gameState === "playing") {
-        setGameState("victory");
-        addLog("OPPONENT NEUTRALIZED — VICTORY", "victory");
-        soundManager.playSfx("victory");
-        onVictory?.(score);
-      }
+    if (gameState === "playing") {
+      terminalFiredRef.current = false;
+      return;
     }
-    if (player.hp <= 0 && gameState === "playing") {
-      setGameState("defeat");
-      addLog("YOU WERE ELIMINATED", "defeat");
+    if (terminalFiredRef.current) return;
+    terminalFiredRef.current = true;
+    if (gameState === "victory") {
+      soundManager.playSfx("victory");
+      onVictory?.(score);
+    } else if (gameState === "defeat") {
       soundManager.playSfx("defeat");
       onDefeat?.(score);
     }
-  }, [player.hp, opponent.hp, bots, gameState, isOneToMany, addLog, onVictory, onDefeat, score]);
+  }, [gameState, onVictory, onDefeat, score]);
 
   // AI attacker
   useEffect(() => {

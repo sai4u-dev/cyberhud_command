@@ -1,6 +1,6 @@
 import { useEffect, useRef, Suspense } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import CyberWarrior from "../components/canvas/CyberWarrior";
@@ -12,9 +12,6 @@ gsap.registerPlugin(ScrollTrigger);
 export default function EnhancedLandingPage() {
   const heroRef = useRef(null);
   const statsRef = useRef(null);
-  const { scrollYProgress } = useScroll();
-  const scale = useTransform(scrollYProgress, [0, 0.3], [1, 0.9]);
-  const opacity = useTransform(scrollYProgress, [0, 0.3], [1, 0.4]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {

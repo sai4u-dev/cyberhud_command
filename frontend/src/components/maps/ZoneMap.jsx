@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 // Simple Google Maps wrapper - uses @react-google-maps/api when key is present
 // Falls back to placeholder cyber grid if no key (keeps app usable without billing)

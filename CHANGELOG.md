@@ -12,6 +12,8 @@ All notable changes. Format: Keep a Changelog. Versions: SemVer. Images tagged `
 - CI/CD: `ci.yml` (lint/test/build/docker smoke/audit), `release.yml` (GHCR on tags), Dependabot, PR/issue templates.
 - Ownership: CODEOWNERS, RUNBOOK, SLOs, SECURITY, CONTRIBUTING, ADRs, DOMAIN + ARCHITECTURE docs.
 - Frontend: env validation, ErrorBoundary, Socket.io client, nginx caching.
+- Community: MIT LICENSE (wired into both packages + READMEs), Contributor Covenant 2.1 Code of Conduct, CoC/license references in CONTRIBUTING.
+- Quality: frontend lint zero-errors — deterministic seeded PRNG for 3D particles, render-phase state derivation (no setState-in-effect), dead-code removal, `interactive` map prop wired.
 
 ## [1.0.0] — 2026-09-25
 - Initial gaming platform: JWT RBAC auth, battles lifecycle, themes, admin stats, 3D landing, maps.

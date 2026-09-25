@@ -3,11 +3,11 @@ import api from "../../services/api";
 import { THEMES, getThemeByKey, applyThemeToDOM } from "../../utils/themeDefinitions";
 
 // Fetch all themes from MongoDB
-export const fetchThemes = createAsyncThunk("theme/fetchAll", async (_, { rejectWithValue }) => {
+export const fetchThemes = createAsyncThunk("theme/fetchAll", async () => {
   try {
     const { data } = await api.get("/themes");
     return data.data.themes;
-  } catch (err) {
+  } catch {
     // fallback to local definitions if API fails (offline)
     return THEMES;
   }

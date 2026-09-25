@@ -83,10 +83,12 @@ export default function MapCN({ onSelectZone, onBattleAction, selectedZone: prop
     return true;
   });
 
-  // Keep propSelected in sync
-  useEffect(() => {
+  // Keep propSelected in sync — render-phase adjustment (no setState-in-effect)
+  const [prevPropSelected, setPrevPropSelected] = useState(propSelected || null);
+  if (propSelected !== prevPropSelected) {
+    setPrevPropSelected(propSelected);
     if (propSelected) setSelected(propSelected);
-  }, [propSelected]);
+  }
 
   // Init leaflet map
   useEffect(() => {
@@ -97,6 +99,9 @@ export default function MapCN({ onSelectZone, onBattleAction, selectedZone: prop
       zoom: 13,
       zoomControl: false,
       attributionControl: true,
+      dragging: interactive,
+      scrollWheelZoom: interactive,
+      doubleClickZoom: interactive,
     });
 
     L.tileLayer(CARTO_DARK, {
@@ -113,10 +118,14 @@ export default function MapCN({ onSelectZone, onBattleAction, selectedZone: prop
 
     // Add scanline overlay via pane
     return () => {
-      try { map.remove(); } catch {}
+      try {
+        map.remove();
+      } catch {
+        // map already removed (StrictMode double-unmount) — safe to ignore
+      }
       mapInstanceRef.current = null;
     };
-  }, []);
+  }, [interactive]);
 
   // Update markers when filter/selected changes
   useEffect(() => {
@@ -124,7 +133,13 @@ export default function MapCN({ onSelectZone, onBattleAction, selectedZone: prop
     if (!map) return;
 
     // Clear old markers
-    markersRef.current.forEach((m) => { try { map.removeLayer(m); } catch {} });
+    markersRef.current.forEach((m) => {
+      try {
+        map.removeLayer(m);
+      } catch {
+        // layer already removed — safe to ignore
+      }
+    });
     markersRef.current = [];
 
     filteredZones.forEach((zone) => {

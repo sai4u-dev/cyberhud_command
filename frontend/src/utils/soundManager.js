@@ -65,7 +65,7 @@ class SoundManager {
   }
 
   // Low-level tone
-  playTone({ freq = 440, freqEnd = null, duration = 0.2, type = "sine", gain = 0.5, attack = 0.01, release = 0.08, delay = 0, dest = "sfx" }) {
+  playTone({ freq = 440, freqEnd = null, duration = 0.2, type = "sine", gain = 0.5, attack = 0.01, delay = 0, dest = "sfx" }) {
     if (!this.ensureCtx()) return;
     const t0 = this.ctx.currentTime + delay;
     const osc = this.ctx.createOscillator();
@@ -87,10 +87,9 @@ class SoundManager {
   }
 
   // Complex SFX definitions
-  playSfx(name, opts = {}) {
+  playSfx(name) {
     if (!this.ensureCtx()) return;
     if (this.volumes.master === 0 || this.volumes.sfx === 0) return;
-    const now = this.ctx.currentTime;
 
     switch (name) {
       case "click":
@@ -194,4 +193,4 @@ if (typeof window !== "undefined") {
 }
 
 export default soundManager;
-export const playSfx = (name, opts) => soundManager.playSfx(name, opts);
+export const playSfx = (name) => soundManager.playSfx(name);

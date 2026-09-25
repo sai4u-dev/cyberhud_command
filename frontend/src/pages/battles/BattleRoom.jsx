@@ -29,10 +29,13 @@ export default function BattleRoom() {
     }
   }, [battle]);
 
-  // Auto-enter play mode when battle goes in_progress
-  useEffect(() => {
+  // Auto-enter play mode when battle goes in_progress — render-phase
+  // adjustment (no setState-in-effect)
+  const [prevBattleStatus, setPrevBattleStatus] = useState(battle?.status);
+  if (battle?.status !== prevBattleStatus) {
+    setPrevBattleStatus(battle?.status);
     if (battle?.status === "in_progress") setPlayMode(true);
-  }, [battle?.status]);
+  }
 
   if (!battle && status !== "loading") {
     return <div className="pt-32 text-center text-slate-500">Battle not found. <button onClick={() => navigate("/battles")} className="text-primary underline">Back to lobby</button></div>;
@@ -41,7 +44,6 @@ export default function BattleRoom() {
 
   const isParticipant = battle.participants?.some((p) => p.user?._id === user?._id || p.user === user?._id);
   const isHost = battle.host?._id === user?._id || battle.host === user?._id;
-  const myParticipant = battle.participants?.find((p) => (p.user?._id || p.user) === user?._id);
 
   const handleJoin = async () => {
     const res = await dispatch(joinBattle({ id: battle._id }));
@@ -128,7 +130,7 @@ export default function BattleRoom() {
             {playMode ? (
               <PlayableArena
                 mode={battle.type}
-                onVictory={async (score) => {
+                onVictory={async () => {
                   // if host, auto-finish battle with victory
                   if (isHost && battle.status === "in_progress") {
                     await dispatch(finishBattle({ id: battle._id, winnerId: user._id }));

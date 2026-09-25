@@ -1,7 +1,8 @@
 import { useRef, useMemo, useState, useCallback, useEffect } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, Environment, ContactShadows, PerspectiveCamera, OrbitControls, useCursor } from "@react-three/drei";
 import * as THREE from "three";
+import { rand01 } from "../../utils/deterministic";
 
 /**
  * CYBER_REIGN WARRIOR — Gaming 3D Model
@@ -270,16 +271,17 @@ function Ground() {
 
 function Particles({ count = 420 }) {
   const pointsRef = useRef();
+  // Seeded volume distribution — pure function of index, stable across re-renders.
   const positions = useMemo(() => {
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
       // volume around warrior, denser near base
-      const r = Math.random() * 2.4 + 0.6;
-      const theta = Math.random() * Math.PI * 2;
-      const y = (Math.random() - 0.35) * 2.8;
-      pos[i * 3] = Math.cos(theta) * r * (Math.random() * 0.6 + 0.4);
+      const r = rand01(i * 5) * 2.4 + 0.6;
+      const theta = rand01(i * 5 + 1) * Math.PI * 2;
+      const y = (rand01(i * 5 + 2) - 0.35) * 2.8;
+      pos[i * 3] = Math.cos(theta) * r * (rand01(i * 5 + 3) * 0.6 + 0.4);
       pos[i * 3 + 1] = y;
-      pos[i * 3 + 2] = Math.sin(theta) * r * (Math.random() * 0.6 + 0.4);
+      pos[i * 3 + 2] = Math.sin(theta) * r * (rand01(i * 5 + 4) * 0.6 + 0.4);
     }
     return pos;
   }, [count]);

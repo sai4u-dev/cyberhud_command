@@ -52,3 +52,7 @@ Use axios interceptor to refresh on 401.
 - Helmet, CORS, httpOnly cookies
 - Pagination, indexed queries
 - Stateless JWT + refresh rotation
+
+## License
+
+MIT — see root [LICENSE](../LICENSE). By contributing you agree your contributions are licensed under the same terms and that you abide by the [Code of Conduct](../CODE_OF_CONDUCT.md).

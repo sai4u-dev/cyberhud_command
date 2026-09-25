@@ -2,6 +2,7 @@ import { useRef, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Float, Environment, MeshDistortMaterial } from "@react-three/drei";
 import * as THREE from "three";
+import { rand01 } from "../../utils/deterministic";
 
 // Animated Torus Knot - cyber core
 function Core({ color = "#8ff5ff" }) {
@@ -34,12 +35,13 @@ function Core({ color = "#8ff5ff" }) {
 
 function Particles({ count = 800 }) {
   const pointsRef = useRef();
+  // Seeded positions — pure function of index, stable across re-renders.
   const positions = useMemo(() => {
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 10;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 10;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 10;
+      pos[i * 3] = (rand01(i * 3) - 0.5) * 10;
+      pos[i * 3 + 1] = (rand01(i * 3 + 1) - 0.5) * 10;
+      pos[i * 3 + 2] = (rand01(i * 3 + 2) - 0.5) * 10;
     }
     return pos;
   }, [count]);

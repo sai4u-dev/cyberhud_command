@@ -21,7 +21,7 @@ export default function ThemeProvider({ children }) {
       if (sound.music > 0) soundManager.startMusic();
       else soundManager.stopMusic();
     }
-  }, [sound?.master, sound?.sfx, sound?.music]);
+  }, [sound, sound?.master, sound?.sfx, sound?.music]);
 
   // Fetch themes from MongoDB on mount
   useEffect(() => {

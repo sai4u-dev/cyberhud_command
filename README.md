@@ -193,3 +193,11 @@ VITE_GOOGLE_MAPS_API_KEY=...
 ---
 
 Built with clean, modular code • Responsive • Ready for Awwwards-level polish. PRs welcome.
+
+---
+
+## 📜 License & Community
+
+- **License:** MIT — see [LICENSE](./LICENSE).
+- **Code of Conduct:** [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) (Contributor Covenant 2.1). By participating you agree to uphold it; violations can be reported to the maintainers listed in [CODEOWNERS](./CODEOWNERS).
+- **Contributing:** [CONTRIBUTING.md](./CONTRIBUTING.md) • **Security:** [SECURITY.md](./SECURITY.md)
