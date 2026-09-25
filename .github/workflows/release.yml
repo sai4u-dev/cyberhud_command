@@ -20,7 +20,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Backend
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./backend
           push: true
@@ -28,7 +28,7 @@ jobs:
             ghcr.io/${{ github.repository }}-backend:${{ github.ref_name }}
             ghcr.io/${{ github.repository }}-backend:latest
       - name: Frontend
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./frontend
           push: true
