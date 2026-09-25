@@ -3,7 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
 import hpp from "hpp";
-import mongoSanitize from "express-mongo-sanitize";
+import sanitizeInput from "./middlewares/sanitizeInput.js";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import pinoHttp from "pino-http";
@@ -82,7 +82,7 @@ app.use(compression());
 app.use(express.json({ limit: env.BODY_LIMIT || "10kb" }));
 app.use(express.urlencoded({ extended: true, limit: env.BODY_LIMIT || "10kb" }));
 app.use(cookieParser());
-app.use(mongoSanitize());
+app.use(sanitizeInput); // Express 4+5 compatible NoSQL scrub (see middlewares/sanitizeInput.js)
 app.use(hpp());
 
 // 5. Global rate limit (auth routes apply an additional stricter limiter)

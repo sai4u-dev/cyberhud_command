@@ -14,6 +14,8 @@ import {
 const router = express.Router();
 
 import { cacheMiddleware } from "../config/redis.js";
+import validateRequest from "../middlewares/validateRequest.js";
+import { userQuerySchema } from "../validators/user.validator.js";
 
 // Public leaderboard — cached 60s (read-heavy, safe stale window)
 router.get("/leaderboard", cacheMiddleware("users:leaderboard", 60), getLeaderboard);
@@ -25,7 +27,7 @@ router.use(protect);
 router.get("/:id", getUserById);
 
 // Admin / Moderator routes
-router.get("/", authorizeAtLeast(ROLES.MODERATOR), getAllUsers);
+router.get("/", authorizeAtLeast(ROLES.MODERATOR), validateRequest(userQuerySchema, "query"), getAllUsers);
 router.patch("/:id/role", authorize(ROLES.ADMIN), updateUserRole);
 router.patch("/:id/ban", authorizeAtLeast(ROLES.MODERATOR), banUser);
 router.delete("/:id", authorize(ROLES.ADMIN), deleteUser);
