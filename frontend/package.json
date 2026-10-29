@@ -14,7 +14,7 @@
     "@react-google-maps/api": "^2.19.3",
     "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^9.5.0",
-    "@reduxjs/toolkit": "^2.6.0",
+    "@reduxjs/toolkit": "^2.13.0",
     "@tailwindcss/vite": "^4.2.2",
     "@types/three": "^0.183.1",
     "animejs": "^3.2.2",
