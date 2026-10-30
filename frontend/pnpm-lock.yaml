@@ -10,13 +10,13 @@ importers:
     dependencies:
       '@react-google-maps/api':
         specifier: ^2.19.3
-        version: 2.20.8(react-dom@19.2.5(react@19.3.1))(react@19.3.1)
+        version: 2.20.8(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@react-three/drei':
         specifier: ^9.122.0
-        version: 9.122.0(@react-three/fiber@9.5.0(@types/react@19.2.14)(immer@11.1.18)(react-dom@19.2.5(react@19.3.1))(react@19.3.1)(three@0.186.1))(@types/react@19.2.14)(@types/three@0.183.1)(immer@11.1.18)(react-dom@19.2.5(react@19.3.1))(react@19.3.1)(three@0.186.1)(use-sync-external-store@1.6.0(react@19.3.1))
+        version: 9.122.0(@react-three/fiber@9.5.0(@types/react@19.2.14)(immer@11.1.18)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(three@0.186.1))(@types/react@19.2.14)(@types/three@0.183.1)(immer@11.1.18)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(three@0.186.1)(use-sync-external-store@1.6.0(react@19.3.1))
       '@react-three/fiber':
         specifier: ^9.5.0
-        version: 9.5.0(@types/react@19.2.14)(immer@11.1.18)(react-dom@19.2.5(react@19.3.1))(react@19.3.1)(three@0.186.1)
+        version: 9.5.0(@types/react@19.2.14)(immer@11.1.18)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(three@0.186.1)
       '@reduxjs/toolkit':
         specifier: ^2.6.0
         version: 2.12.0(react-redux@9.3.0(@types/react@19.2.14)(react@19.3.1)(redux@5.0.1))(react@19.3.1)
@@ -34,7 +34,7 @@ importers:
         version: 1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
       framer-motion:
         specifier: ^14.4.0
-        version: 14.4.0(react-dom@19.2.5(react@19.3.1))(react@19.3.1)
+        version: 14.4.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       gsap:
         specifier: ^3.14.2
         version: 3.14.2
@@ -45,17 +45,17 @@ importers:
         specifier: ^19.3.1
         version: 19.3.1
       react-dom:
-        specifier: ^19.2.4
-        version: 19.2.5(react@19.3.1)
+        specifier: ^19.3.1
+        version: 19.3.1(react@19.3.1)
       react-leaflet:
         specifier: ^4.2.1
-        version: 4.2.1(leaflet@1.9.4)(react-dom@19.2.5(react@19.3.1))(react@19.3.1)
+        version: 4.2.1(leaflet@1.9.4)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       react-redux:
         specifier: ^9.1.2
         version: 9.3.0(@types/react@19.2.14)(react@19.3.1)(redux@5.0.1)
       react-router-dom:
         specifier: ^7.14.0
-        version: 7.14.0(react-dom@19.2.5(react@19.3.1))(react@19.3.1)
+        version: 7.14.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       socket.io-client:
         specifier: ^4.8.4
         version: 4.8.4(supports-color@7.2.0)
@@ -1361,10 +1361,10 @@ packages:
     peerDependencies:
       react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
 
-  react-dom@19.2.5:
-    resolution: {integrity: sha512-J5bAZz+DXMMwW/wV3xzKke59Af6CHY7G4uYLN1OvBcKEsWOs4pQExj86BBKamxl/Ik5bx9whOrvBlSDfWzgSag==}
+  react-dom@19.3.1:
+    resolution: {integrity: sha512-Y0bARz53lhEC1NMCASs0/j+faB/zqt3R8hpvg1e8+61ZVJ4UL0UdC4cBbXfZMcIuhrfgeILTLe+ZeBCavQPtKQ==}
     peerDependencies:
-      react: ^19.2.5
+      react: ^19.3.1
 
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
@@ -1444,6 +1444,9 @@ packages:
 
   scheduler@0.27.0:
     resolution: {integrity: sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==}
+
+  scheduler@0.28.0:
+    resolution: {integrity: sha512-juorfCmIkIw8tT+p5BXSm6PJjQF/ycEYmKyzURCIt/RaZIhL+PulbQ9Yu2z1HdOJDdqDTlxA1+xKBmHXJsczAw==}
 
   semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
@@ -1888,7 +1891,7 @@ snapshots:
 
   '@oxc-project/types@0.152.0': {}
 
-  '@react-google-maps/api@2.20.8(react-dom@19.2.5(react@19.3.1))(react@19.3.1)':
+  '@react-google-maps/api@2.20.8(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
       '@googlemaps/js-api-loader': 1.16.8
       '@googlemaps/markerclusterer': 2.5.3
@@ -1897,17 +1900,17 @@ snapshots:
       '@types/google.maps': 3.58.1
       invariant: 2.2.4
       react: 19.3.1
-      react-dom: 19.2.5(react@19.3.1)
+      react-dom: 19.3.1(react@19.3.1)
 
   '@react-google-maps/infobox@2.20.0': {}
 
   '@react-google-maps/marker-clusterer@2.20.0': {}
 
-  '@react-leaflet/core@2.1.0(leaflet@1.9.4)(react-dom@19.2.5(react@19.3.1))(react@19.3.1)':
+  '@react-leaflet/core@2.1.0(leaflet@1.9.4)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
       leaflet: 1.9.4
       react: 19.3.1
-      react-dom: 19.2.5(react@19.3.1)
+      react-dom: 19.3.1(react@19.3.1)
 
   '@react-spring/animated@9.7.5(react@19.3.1)':
     dependencies:
@@ -1930,25 +1933,25 @@ snapshots:
       '@react-spring/types': 9.7.5
       react: 19.3.1
 
-  '@react-spring/three@9.7.5(@react-three/fiber@9.5.0(@types/react@19.2.14)(immer@11.1.18)(react-dom@19.2.5(react@19.3.1))(react@19.3.1)(three@0.186.1))(react@19.3.1)(three@0.186.1)':
+  '@react-spring/three@9.7.5(@react-three/fiber@9.5.0(@types/react@19.2.14)(immer@11.1.18)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(three@0.186.1))(react@19.3.1)(three@0.186.1)':
     dependencies:
       '@react-spring/animated': 9.7.5(react@19.3.1)
       '@react-spring/core': 9.7.5(react@19.3.1)
       '@react-spring/shared': 9.7.5(react@19.3.1)
       '@react-spring/types': 9.7.5
-      '@react-three/fiber': 9.5.0(@types/react@19.2.14)(immer@11.1.18)(react-dom@19.2.5(react@19.3.1))(react@19.3.1)(three@0.186.1)
+      '@react-three/fiber': 9.5.0(@types/react@19.2.14)(immer@11.1.18)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(three@0.186.1)
       react: 19.3.1
       three: 0.186.1
 
   '@react-spring/types@9.7.5': {}
 
-  '@react-three/drei@9.122.0(@react-three/fiber@9.5.0(@types/react@19.2.14)(immer@11.1.18)(react-dom@19.2.5(react@19.3.1))(react@19.3.1)(three@0.186.1))(@types/react@19.2.14)(@types/three@0.183.1)(immer@11.1.18)(react-dom@19.2.5(react@19.3.1))(react@19.3.1)(three@0.186.1)(use-sync-external-store@1.6.0(react@19.3.1))':
+  '@react-three/drei@9.122.0(@react-three/fiber@9.5.0(@types/react@19.2.14)(immer@11.1.18)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(three@0.186.1))(@types/react@19.2.14)(@types/three@0.183.1)(immer@11.1.18)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(three@0.186.1)(use-sync-external-store@1.6.0(react@19.3.1))':
     dependencies:
       '@babel/runtime': 7.29.2
       '@mediapipe/tasks-vision': 0.10.17
       '@monogrid/gainmap-js': 3.4.0(three@0.186.1)
-      '@react-spring/three': 9.7.5(@react-three/fiber@9.5.0(@types/react@19.2.14)(immer@11.1.18)(react-dom@19.2.5(react@19.3.1))(react@19.3.1)(three@0.186.1))(react@19.3.1)(three@0.186.1)
-      '@react-three/fiber': 9.5.0(@types/react@19.2.14)(immer@11.1.18)(react-dom@19.2.5(react@19.3.1))(react@19.3.1)(three@0.186.1)
+      '@react-spring/three': 9.7.5(@react-three/fiber@9.5.0(@types/react@19.2.14)(immer@11.1.18)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(three@0.186.1))(react@19.3.1)(three@0.186.1)
+      '@react-three/fiber': 9.5.0(@types/react@19.2.14)(immer@11.1.18)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(three@0.186.1)
       '@use-gesture/react': 10.3.1(react@19.3.1)
       camera-controls: 2.10.1(three@0.186.1)
       cross-env: 7.0.3
@@ -1970,14 +1973,14 @@ snapshots:
       utility-types: 3.11.0
       zustand: 5.0.12(@types/react@19.2.14)(immer@11.1.18)(react@19.3.1)(use-sync-external-store@1.6.0(react@19.3.1))
     optionalDependencies:
-      react-dom: 19.2.5(react@19.3.1)
+      react-dom: 19.3.1(react@19.3.1)
     transitivePeerDependencies:
       - '@types/react'
       - '@types/three'
       - immer
       - use-sync-external-store
 
-  '@react-three/fiber@9.5.0(@types/react@19.2.14)(immer@11.1.18)(react-dom@19.2.5(react@19.3.1))(react@19.3.1)(three@0.186.1)':
+  '@react-three/fiber@9.5.0(@types/react@19.2.14)(immer@11.1.18)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(three@0.186.1)':
     dependencies:
       '@babel/runtime': 7.29.2
       '@types/webxr': 0.5.24
@@ -1985,14 +1988,14 @@ snapshots:
       buffer: 6.0.3
       its-fine: 2.0.0(@types/react@19.2.14)(react@19.3.1)
       react: 19.3.1
-      react-use-measure: 2.1.7(react-dom@19.2.5(react@19.3.1))(react@19.3.1)
+      react-use-measure: 2.1.7(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       scheduler: 0.27.0
       suspend-react: 0.1.3(react@19.3.1)
       three: 0.186.1
       use-sync-external-store: 1.6.0(react@19.3.1)
       zustand: 5.0.12(@types/react@19.2.14)(immer@11.1.18)(react@19.3.1)(use-sync-external-store@1.6.0(react@19.3.1))
     optionalDependencies:
-      react-dom: 19.2.5(react@19.3.1)
+      react-dom: 19.3.1(react@19.3.1)
     transitivePeerDependencies:
       - '@types/react'
       - immer
@@ -2488,14 +2491,14 @@ snapshots:
       hasown: 2.0.4
       mime-types: 2.1.35
 
-  framer-motion@14.4.0(react-dom@19.2.5(react@19.3.1))(react@19.3.1):
+  framer-motion@14.4.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
     dependencies:
       motion-dom: 14.4.0
       motion-utils: 14.1.1
       tslib: 2.8.1
     optionalDependencies:
       react: 19.3.1
-      react-dom: 19.2.5(react@19.3.1)
+      react-dom: 19.3.1(react@19.3.1)
 
   fsevents@2.3.3:
     optional: true
@@ -2850,19 +2853,19 @@ snapshots:
       prop-types: 15.8.1
       react: 19.3.1
 
-  react-dom@19.2.5(react@19.3.1):
+  react-dom@19.3.1(react@19.3.1):
     dependencies:
       react: 19.3.1
-      scheduler: 0.27.0
+      scheduler: 0.28.0
 
   react-is@16.13.1: {}
 
-  react-leaflet@4.2.1(leaflet@1.9.4)(react-dom@19.2.5(react@19.3.1))(react@19.3.1):
+  react-leaflet@4.2.1(leaflet@1.9.4)(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
     dependencies:
-      '@react-leaflet/core': 2.1.0(leaflet@1.9.4)(react-dom@19.2.5(react@19.3.1))(react@19.3.1)
+      '@react-leaflet/core': 2.1.0(leaflet@1.9.4)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       leaflet: 1.9.4
       react: 19.3.1
-      react-dom: 19.2.5(react@19.3.1)
+      react-dom: 19.3.1(react@19.3.1)
 
   react-redux@9.3.0(@types/react@19.2.14)(react@19.3.1)(redux@5.0.1):
     dependencies:
@@ -2873,25 +2876,25 @@ snapshots:
       '@types/react': 19.2.14
       redux: 5.0.1
 
-  react-router-dom@7.14.0(react-dom@19.2.5(react@19.3.1))(react@19.3.1):
+  react-router-dom@7.14.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
     dependencies:
       react: 19.3.1
-      react-dom: 19.2.5(react@19.3.1)
-      react-router: 7.14.0(react-dom@19.2.5(react@19.3.1))(react@19.3.1)
+      react-dom: 19.3.1(react@19.3.1)
+      react-router: 7.14.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
 
-  react-router@7.14.0(react-dom@19.2.5(react@19.3.1))(react@19.3.1):
+  react-router@7.14.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
     dependencies:
       cookie: 1.1.1
       react: 19.3.1
       set-cookie-parser: 2.7.2
     optionalDependencies:
-      react-dom: 19.2.5(react@19.3.1)
+      react-dom: 19.3.1(react@19.3.1)
 
-  react-use-measure@2.1.7(react-dom@19.2.5(react@19.3.1))(react@19.3.1):
+  react-use-measure@2.1.7(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
     dependencies:
       react: 19.3.1
     optionalDependencies:
-      react-dom: 19.2.5(react@19.3.1)
+      react-dom: 19.3.1(react@19.3.1)
 
   react@19.3.1: {}
 
@@ -2929,6 +2932,8 @@ snapshots:
       '@rolldown/binding-win32-x64-msvc': 1.2.12
 
   scheduler@0.27.0: {}
+
+  scheduler@0.28.0: {}
 
   semver@6.3.1: {}
 
